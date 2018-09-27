@@ -1,12 +1,16 @@
 package clonedir
 
 import (
+	"log"
 	"os"
 	"os/exec"
 	"path"
 	"path/filepath"
+	"runtime"
 	"strings"
 )
+
+var debugging = os.Getenv("CLONEDIR_DEBUG") == "1"
 
 func Clone(from, to string) error {
 	dirs := map[string][]string{}
@@ -30,7 +34,15 @@ func Clone(from, to string) error {
 		return err
 	}
 	for dir, files := range dirs {
-		args := append([]string{"-c"}, append(files, dir)...)
+		args := append(files, dir)
+		if runtime.GOOS == "darwin" {
+			args = append([]string{"-c"}, args...)
+		} else {
+			args = append([]string{"--reflink=auto"}, args...)
+		}
+		if debugging {
+			log.Printf("cp %q\n", args)
+		}
 		cmd := exec.Command("cp", args...)
 		cmd.Stdin = os.Stdin
 		cmd.Stdout = os.Stdout

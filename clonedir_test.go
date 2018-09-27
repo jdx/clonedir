@@ -14,6 +14,7 @@ func must(err error) {
 }
 
 func TestClonedir(t *testing.T) {
+	os.RemoveAll("tmp")
 	Clone(path.Join("fixtures", "1-foo"), "tmp")
 	f, err := os.Open(path.Join("fixtures/1-foo/node_modules/edon-test-c/package.json"))
 	must(err)
@@ -22,4 +23,5 @@ func TestClonedir(t *testing.T) {
 	if pjson["name"] != "edon-test-c" {
 		t.Fail()
 	}
+	os.RemoveAll("tmp")
 }
