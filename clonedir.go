@@ -34,6 +34,9 @@ func Clone(from, to string) error {
 		return err
 	}
 	for dir, files := range dirs {
+		if len(files) == 0 {
+			continue
+		}
 		args := append(files, dir)
 		if runtime.GOOS == "darwin" {
 			args = append([]string{"-c"}, args...)
